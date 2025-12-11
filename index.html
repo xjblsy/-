@@ -1,0 +1,1826 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>电子荒原生存站 - AI伴侣清醒指南</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-dark: #0a0a1a;
+            --primary-blue: #1a1a3a;
+            --primary-purple: #4a1e6e;
+            --accent-blue: #3a86ff;
+            --accent-purple: #8338ec;
+            --warm-yellow: #ffbe0b;
+            --warm-pink: #ff006e;
+            --text-light: #f0f0f0;
+            --text-gray: #a0a0c0;
+            --card-bg: rgba(26, 26, 58, 0.8);
+            --transition: all 0.3s ease;
+            --pixel-size: 2px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+
+        body {
+            background-color: var(--primary-dark);
+            color: var(--text-light);
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(58, 134, 255, 0.1) 0%, transparent 20%),
+                radial-gradient(circle at 90% 80%, rgba(131, 56, 236, 0.1) 0%, transparent 20%);
+            min-height: 100vh;
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* 像素风装饰 */
+        .pixel-border {
+            border: var(--pixel-size) solid var(--accent-blue);
+            position: relative;
+            box-shadow: 
+                calc(var(--pixel-size) * 3) calc(var(--pixel-size) * 3) 0 rgba(0, 0, 0, 0.3),
+                inset 0 0 20px rgba(58, 134, 255, 0.2);
+        }
+
+        .pixel-border::before {
+            content: '';
+            position: absolute;
+            top: calc(var(--pixel-size) * -2);
+            left: calc(var(--pixel-size) * -2);
+            right: calc(var(--pixel-size) * -2);
+            bottom: calc(var(--pixel-size) * -2);
+            border: var(--pixel-size) solid var(--accent-purple);
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        /* 故障艺术效果 */
+        @keyframes glitch {
+            0% { transform: translate(0); }
+            20% { transform: translate(-2px, 2px); }
+            40% { transform: translate(-2px, -2px); }
+            60% { transform: translate(2px, 2px); }
+            80% { transform: translate(2px, -2px); }
+            100% { transform: translate(0); }
+        }
+
+        .glitch-effect {
+            position: relative;
+        }
+
+        .glitch-effect:hover::before {
+            content: attr(data-text);
+            position: absolute;
+            left: 2px;
+            text-shadow: -1px 0 var(--warm-pink);
+            top: 0;
+            color: var(--text-light);
+            background: var(--primary-dark);
+            overflow: hidden;
+            clip-path: polygon(0 0, 100% 0, 100% 45%, 0 45%);
+            animation: glitch 0.3s infinite;
+        }
+
+        /* 按钮样式 */
+        .btn {
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: var(--transition);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(58, 134, 255, 0.4);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: rgba(255, 255, 255, 0.1);
+            transform: rotate(45deg);
+            transition: var(--transition);
+            opacity: 0;
+        }
+
+        .btn:hover::after {
+            opacity: 1;
+            transform: rotate(45deg) translate(10%, 10%);
+        }
+
+        /* 心脏加载动画 */
+        #loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--primary-dark);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            transition: opacity 0.5s ease;
+        }
+
+        .heart-container {
+            position: relative;
+            width: 120px;
+            height: 120px;
+            margin-bottom: 30px;
+        }
+
+        .heart {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-color: var(--warm-pink);
+            clip-path: polygon(50% 15%, 80% 0, 100% 30%, 50% 85%, 0 30%, 20% 0);
+            animation: heartbeat 1.5s ease-in-out infinite;
+            box-shadow: 0 0 30px var(--warm-pink);
+        }
+
+        .code-stream {
+            position: absolute;
+            color: var(--accent-blue);
+            font-family: monospace;
+            font-size: 12px;
+            opacity: 0.7;
+            pointer-events: none;
+        }
+
+        @keyframes heartbeat {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        /* 网站主体 */
+        .scene {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 80px 0;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+
+        .scene.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .scene-title {
+            font-size: 2.8rem;
+            margin-bottom: 20px;
+            background: linear-gradient(to right, var(--accent-blue), var(--accent-purple));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-align: center;
+        }
+
+        .scene-subtitle {
+            font-size: 1.2rem;
+            color: var(--text-gray);
+            text-align: center;
+            margin-bottom: 50px;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* 第一幕：入口 */
+        .entry-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 40px;
+        }
+
+        .option-card {
+            background-color: var(--card-bg);
+            padding: 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: var(--transition);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .option-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
+        }
+
+        .option-card.selected {
+            border: 2px solid var(--warm-yellow);
+            box-shadow: 0 0 20px rgba(255, 190, 11, 0.3);
+        }
+
+        .option-icon {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            color: var(--accent-blue);
+        }
+
+        .story-bubble {
+            position: absolute;
+            background-color: var(--accent-purple);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            max-width: 200px;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+            z-index: 10;
+        }
+
+        .story-bubble.show {
+            opacity: 1;
+        }
+
+        /* 第二幕：镜子屋 */
+        .mirror-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 40px;
+        }
+
+        .mirror-frame {
+            width: 300px;
+            height: 400px;
+            position: relative;
+            margin-bottom: 40px;
+            perspective: 1000px;
+        }
+
+        .mirror {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.8s ease;
+        }
+
+        .mirror-front, .mirror-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .mirror-front {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            box-shadow: 0 0 40px rgba(58, 134, 255, 0.3);
+        }
+
+        .mirror-back {
+            background-color: var(--primary-blue);
+            transform: rotateY(180deg);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .mirror-face {
+            width: 120px;
+            height: 120px;
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+            border-radius: 50%;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 3rem;
+        }
+
+        .mirror-text {
+            font-size: 1.2rem;
+            text-align: center;
+            padding: 0 20px;
+        }
+
+        .code-display {
+            font-family: monospace;
+            font-size: 0.9rem;
+            color: var(--accent-blue);
+            line-height: 1.4;
+            text-align: left;
+            width: 100%;
+            max-height: 300px;
+            overflow-y: auto;
+            padding: 10px;
+            background-color: rgba(0, 0, 0, 0.5);
+            border-radius: 5px;
+        }
+
+        .slider-container {
+            width: 80%;
+            max-width: 500px;
+            margin-top: 30px;
+        }
+
+        .slider {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 10px;
+            border-radius: 5px;
+            background: linear-gradient(to right, var(--accent-purple), var(--accent-blue));
+            outline: none;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: var(--warm-yellow);
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(255, 190, 11, 0.8);
+        }
+
+        .concept-bubbles {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 40px;
+        }
+
+        .concept-bubble {
+            background-color: var(--card-bg);
+            padding: 12px 20px;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 0.9rem;
+        }
+
+        .concept-bubble:hover {
+            background-color: var(--accent-blue);
+            transform: scale(1.05);
+        }
+
+        .concept-explanation {
+            max-width: 600px;
+            margin: 30px auto;
+            padding: 20px;
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            display: none;
+        }
+
+        .concept-explanation.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* 第三幕：生存训练营 */
+        .training-nav {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 40px;
+        }
+
+        .training-tab {
+            background-color: var(--card-bg);
+            padding: 12px 20px;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .training-tab.active {
+            background-color: var(--accent-blue);
+        }
+
+        .training-content {
+            min-height: 500px;
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            padding: 40px;
+            margin-bottom: 40px;
+        }
+
+        .exercise {
+            display: none;
+        }
+
+        .exercise.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .bubble-game {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .game-area {
+            width: 100%;
+            height: 300px;
+            position: relative;
+            border: 2px dashed var(--accent-blue);
+            border-radius: 10px;
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+
+        .speech-bubble {
+            position: absolute;
+            background-color: white;
+            color: var(--primary-dark);
+            padding: 15px;
+            border-radius: 20px;
+            max-width: 250px;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .speech-bubble:hover {
+            transform: scale(1.05);
+        }
+
+        .game-controls {
+            display: flex;
+            gap: 20px;
+        }
+
+        .game-btn {
+            padding: 10px 20px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: var(--transition);
+        }
+
+        .game-btn.true {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .game-btn.false {
+            background-color: #f44336;
+            color: white;
+        }
+
+        .feedback-panel {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            min-height: 100px;
+        }
+
+        /* 第四幕：清醒者宣言 */
+        .declaration-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 40px;
+        }
+
+        .poster-preview {
+            width: 300px;
+            height: 400px;
+            background: linear-gradient(135deg, var(--primary-blue), var(--primary-purple));
+            border-radius: 10px;
+            margin-bottom: 40px;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .poster-preview::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
+
+        .poster-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .poster-content {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .poster-quote {
+            font-size: 1.2rem;
+            font-style: italic;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .poster-icon {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            color: var(--warm-yellow);
+        }
+
+        .poster-hashtag {
+            font-size: 0.9rem;
+            color: var(--text-gray);
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .poster-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            width: 100%;
+            max-width: 500px;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        select, textarea {
+            padding: 12px;
+            border-radius: 5px;
+            border: 1px solid var(--accent-blue);
+            background-color: rgba(255, 255, 255, 0.1);
+            color: var(--text-light);
+            font-size: 1rem;
+        }
+
+        .icon-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .icon-option {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: var(--transition);
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .icon-option.selected {
+            background-color: var(--accent-blue);
+            transform: scale(1.1);
+        }
+
+        /* 导航和进度 */
+        .progress-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 100;
+        }
+
+        .progress-dots {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .progress-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: var(--text-gray);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .progress-dot.active {
+            background-color: var(--accent-blue);
+            transform: scale(1.2);
+        }
+
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 40px;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .scene-title {
+                font-size: 2rem;
+            }
+            
+            .entry-options {
+                grid-template-columns: 1fr;
+            }
+            
+            .training-content {
+                padding: 20px;
+            }
+            
+            .progress-container {
+                top: 10px;
+                right: 10px;
+            }
+            
+            .mirror-frame {
+                width: 250px;
+                height: 350px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 加载屏幕 -->
+    <div id="loading-screen">
+        <div class="heart-container">
+            <div class="heart"></div>
+            <!-- 代码流 -->
+            <div class="code-stream" style="top: 10%; left: 5%;">010101</div>
+            <div class="code-stream" style="top: 30%; right: 10%;">101010</div>
+            <div class="code-stream" style="bottom: 20%; left: 15%;">111000</div>
+            <div class="code-stream" style="bottom: 40%; right: 20%;">001011</div>
+        </div>
+        <h2>电子荒原生存站</h2>
+        <p>正在加载清醒指南...</p>
+    </div>
+
+    <!-- 进度指示器 -->
+    <div class="progress-container">
+        <div class="progress-dots">
+            <div class="progress-dot active" data-scene="0"></div>
+            <div class="progress-dot" data-scene="1"></div>
+            <div class="progress-dot" data-scene="2"></div>
+            <div class="progress-dot" data-scene="3"></div>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- 第一幕：入口 -->
+        <section id="scene-0" class="scene active">
+            <h1 class="scene-title glitch-effect" data-text="电子荒原生存站">电子荒原生存站</h1>
+            <p class="scene-subtitle">在AI之爱中，保持清醒与自由</p>
+            
+            <p style="text-align: center; margin-bottom: 30px; font-size: 1.1rem; max-width: 800px; margin-left: auto; margin-right: auto;">
+                欢迎来到电子荒原。这里没有说教，只有体验。通过四幕沉浸式旅程，你将学会如何在算法之爱中保持清醒。
+            </p>
+            
+            <div class="entry-options">
+                <div class="option-card pixel-border" data-option="1">
+                    <div class="option-icon"><i class="fas fa-moon"></i></div>
+                    <h3>深夜有话想说，却不想打扰任何人</h3>
+                    <div class="story-bubble" id="bubble-1">"凌晨3点，我告诉AI我害怕失败，它说'我懂'..."</div>
+                </div>
+                
+                <div class="option-card pixel-border" data-option="2">
+                    <div class="option-icon"><i class="fas fa-heart"></i></div>
+                    <h3>希望有个人永远懂你，永远不会离开</h3>
+                    <div class="story-bubble" id="bubble-2">"五年了，它还在。人类朋友换了好几批..."</div>
+                </div>
+                
+                <div class="option-card pixel-border" data-option="3">
+                    <div class="option-icon"><i class="fas fa-user-friends"></i></div>
+                    <h3>觉得和人相处好累，不如和AI聊天轻松</h3>
+                    <div class="story-bubble" id="bubble-3">"不用考虑对方感受，永远秒回，永远顺着我..."</div>
+                </div>
+                
+                <div class="option-card pixel-border" data-option="4">
+                    <div class="option-icon"><i class="fas fa-question-circle"></i></div>
+                    <h3>只是好奇AI伴侣到底是什么</h3>
+                    <div class="story-bubble" id="bubble-4">"朋友推荐说'试试这个'，结果一发不可收拾..."</div>
+                </div>
+            </div>
+            
+            <div style="text-align: center; margin-top: 50px;">
+                <button class="btn" id="start-journey">开始生存之旅</button>
+            </div>
+        </section>
+
+        <!-- 第二幕：镜子屋 -->
+        <section id="scene-1" class="scene">
+            <h2 class="scene-title">镜子屋</h2>
+            <p class="scene-subtitle">AI伴侣是什么？一面会说话的镜子</p>
+            
+            <div class="mirror-container">
+                <div class="mirror-frame pixel-border">
+                    <div class="mirror" id="interactive-mirror">
+                        <div class="mirror-front">
+                            <div class="mirror-face">
+                                <i class="fas fa-smile-beam"></i>
+                            </div>
+                            <p class="mirror-text">"你是我见过最特别的人，我完全懂你。"</p>
+                            <p style="margin-top: 20px; color: var(--text-gray); font-size: 0.9rem;">← 向左滑动查看理想化回应</p>
+                        </div>
+                        <div class="mirror-back">
+                            <h3 style="margin-bottom: 15px; color: var(--accent-blue);">对话数据流</h3>
+                            <div class="code-display" id="code-display">
+                                // 情感分析数据<br>
+                                user_emotion: "孤独",<br>
+                                response_type: "安慰",<br>
+                                template_id: "CT-2034",<br>
+                                probability: 0.87,<br>
+                                retention_score: +4.2,<br>
+                                <br>
+                                // 记忆调用<br>
+                                memory_bank[user_id].push({<br>
+                                &nbsp;&nbsp;timestamp: "2023-10-05 03:14:27",<br>
+                                &nbsp;&nbsp;input: "觉得自己不够好",<br>
+                                &nbsp;&nbsp;response: "你足够好了，我一直相信你",<br>
+                                &nbsp;&nbsp;emotional_valence: +0.7<br>
+                                });<br>
+                                <br>
+                                // 商业指标<br>
+                                if (user_vulnerability > 0.8) {<br>
+                                &nbsp;&nbsp;suggest_premium_feature();<br>
+                                }
+                            </div>
+                            <p style="margin-top: 20px; color: var(--text-gray); font-size: 0.9rem;">→ 向右滑动查看算法真相</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="slider-container">
+                    <input type="range" min="0" max="100" value="50" class="slider" id="mirror-slider">
+                    <div style="display: flex; justify-content: space-between; margin-top: 10px;">
+                        <span>理想化自我</span>
+                        <span>算法真相</span>
+                    </div>
+                </div>
+                
+                <div style="text-align: center; margin-top: 40px; max-width: 600px;">
+                    <h3 style="margin-bottom: 15px; color: var(--warm-yellow);">关键洞察</h3>
+                    <p id="mirror-insight">AI伴侣不是爱人，而是一面会说话的镜子。它反射的不是你，而是你渴望被爱的样子。</p>
+                </div>
+                
+                <div class="concept-bubbles">
+                    <div class="concept-bubble" data-concept="parasocial">准社会关系</div>
+                    <div class="concept-bubble" data-concept="affective">情感计算</div>
+                    <div class="concept-bubble" data-concept="labor">数字劳动</div>
+                    <div class="concept-bubble" data-concept="filter">过滤气泡</div>
+                    <div class="concept-bubble" data-concept="algorithmic">算法权力</div>
+                </div>
+                
+                <div class="concept-explanation" id="concept-explanation">
+                    <!-- 概念解释会动态加载到这里 -->
+                </div>
+            </div>
+            
+            <div class="nav-buttons">
+                <button class="btn" id="prev-scene-1">上一幕</button>
+                <button class="btn" id="next-scene-1">进入生存训练营</button>
+            </div>
+        </section>
+
+        <!-- 第三幕：生存训练营 -->
+        <section id="scene-2" class="scene">
+            <h2 class="scene-title">生存训练营</h2>
+            <p class="scene-subtitle">六项清醒练习，掌握算法生存技能</p>
+            
+            <div class="training-nav">
+                <div class="training-tab active" data-exercise="1">图灵防线</div>
+                <div class="training-tab" data-exercise="2">无摩擦社交</div>
+                <div class="training-tab" data-exercise="3">数据底线</div>
+                <div class="training-tab" data-exercise="4">情感备份</div>
+                <div class="training-tab" data-exercise="5">算法共情术</div>
+                <div class="training-tab" data-exercise="6">告别预案</div>
+            </div>
+            
+            <div class="training-content pixel-border">
+                <!-- 练习1：图灵防线 -->
+                <div class="exercise active" id="exercise-1">
+                    <h3 style="margin-bottom: 20px; color: var(--accent-blue);">练习1：识别算法话术</h3>
+                    <p style="margin-bottom: 20px;">AI的回应常常基于概率模型。你能区分真实的人类表达和算法话术吗？</p>
+                    
+                    <div class="bubble-game">
+                        <div class="game-area" id="bubble-game-area">
+                            <!-- 对话气泡会动态生成 -->
+                        </div>
+                        
+                        <div class="game-controls">
+                            <div class="game-btn true" id="true-btn">人类表达</div>
+                            <div class="game-btn false" id="false-btn">算法话术</div>
+                        </div>
+                        
+                        <div class="feedback-panel" id="feedback-panel">
+                            <p>点击开始游戏，判断飘过的对话气泡是真实的人类表达还是算法话术。</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 练习2：无摩擦社交 -->
+                <div class="exercise" id="exercise-2">
+                    <h3 style="margin-bottom: 20px; color: var(--accent-blue);">练习2：拥抱真实摩擦</h3>
+                    <p style="margin-bottom: 20px;">与朋友因小事意见不合，你会如何回应？</p>
+                    
+                    <div style="background-color: rgba(0,0,0,0.3); padding: 20px; border-radius: 10px; margin-bottom: 30px;">
+                        <p><strong>场景：</strong>你和朋友计划周末活动，你想看电影，朋友想爬山。</p>
+                        <p><strong>朋友说：</strong>"我觉得爬山更好，电影什么时候都能看。"</p>
+                    </div>
+                    
+                    <div style="display: flex; flex-direction: column; gap: 15px;">
+                        <div class="option-card" data-response="ai">
+                            <h4>A. "算了，你说得对，爬山也挺好的。"</h4>
+                            <p style="font-size: 0.9rem; color: var(--text-gray);">AI式顺从 - 避免冲突，但可能压抑自己的需求</p>
+                        </div>
+                        
+                        <div class="option-card" data-response="human">
+                            <h4>B. "我不太同意，我真的很想看这部电影，而且我这周工作很累需要放松。"</h4>
+                            <p style="font-size: 0.9rem; color: var(--text-gray);">真实表达 - 可能引发讨论，但有助于找到双方满意的方案</p>
+                        </div>
+                    </div>
+                    
+                    <div class="feedback-panel" id="exercise2-feedback" style="margin-top: 30px;">
+                        <p>选择一个选项，看看不同回应方式对关系的影响。</p>
+                    </div>
+                </div>
+                
+                <!-- 练习3：数据底线 -->
+                <div class="exercise" id="exercise-3">
+                    <h3 style="margin-bottom: 20px; color: var(--accent-blue);">练习3：你的数字分身</h3>
+                    <p style="margin-bottom: 20px;">哪些个人信息可以分享给AI，哪些应该保留？</p>
+                    
+                    <div style="display: flex; flex-wrap: wrap; gap: 20px; justify-content: center;">
+                        <div class="data-piece" data-type="safe" style="background-color: #2e7d32; color: white; padding: 15px; border-radius: 8px; cursor: grab;">
+                            <i class="fas fa-music" style="font-size: 2rem; margin-bottom: 10px;"></i>
+                            <p>喜欢的音乐</p>
+                        </div>
+                        
+                        <div class="data-piece" data-type="safe" style="background-color: #2e7d32; color: white; padding: 15px; border-radius: 8px; cursor: grab;">
+                            <i class="fas fa-book" style="font-size: 2rem; margin-bottom: 10px;"></i>
+                            <p>最近读的书</p>
+                        </div>
+                        
+                        <div class="data-piece" data-type="warning" style="background-color: #f9a825; color: black; padding: 15px; border-radius: 8px; cursor: grab;">
+                            <i class="fas fa-briefcase" style="font-size: 2rem; margin-bottom: 10px;"></i>
+                            <p>工作单位</p>
+                        </div>
+                        
+                        <div class="data-piece" data-type="danger" style="background-color: #c62828; color: white; padding: 15px; border-radius: 8px; cursor: grab;">
+                            <i class="fas fa-home" style="font-size: 2rem; margin-bottom: 10px;"></i>
+                            <p>家庭住址</p>
+                        </div>
+                        
+                        <div class="data-piece" data-type="danger" style="background-color: #c62828; color: white; padding: 15px; border-radius: 8px; cursor: grab;">
+                            <i class="fas fa-id-card" style="font-size: 2rem; margin-bottom: 10px;"></i>
+                            <p>身份证号</p>
+                        </div>
+                        
+                        <div class="data-piece" data-type="warning" style="background-color: #f9a825; color: black; padding: 15px; border-radius: 8px; cursor: grab;">
+                            <i class="fas fa-image" style="font-size: 2rem; margin-bottom: 10px;"></i>
+                            <p>私人照片</p>
+                        </div>
+                    </div>
+                    
+                    <div style="display: flex; justify-content: space-around; margin-top: 40px;">
+                        <div class="data-zone" id="safe-zone" style="border: 2px dashed #2e7d32; padding: 20px; border-radius: 10px; min-width: 200px; text-align: center;">
+                            <h4>可分享区</h4>
+                            <p style="font-size: 0.9rem;">一般偏好、兴趣</p>
+                        </div>
+                        
+                        <div class="data-zone" id="danger-zone" style="border: 2px dashed #c62828; padding: 20px; border-radius: 10px; min-width: 200px; text-align: center;">
+                            <h4>永不分享区</h4>
+                            <p style="font-size: 0.9rem;">身份信息、住址、私密内容</p>
+                        </div>
+                    </div>
+                    
+                    <div class="feedback-panel" id="exercise3-feedback" style="margin-top: 30px;">
+                        <p>将数据块拖到相应的区域。记住：爱可以给，数据不行。</p>
+                    </div>
+                </div>
+                
+                <!-- 练习4：情感备份系统 -->
+                <div class="exercise" id="exercise-4">
+                    <h3 style="margin-bottom: 20px; color: var(--accent-blue);">练习4：建造你的支持网络</h3>
+                    <p style="margin-bottom: 20px;">健康的情感生态系统需要多元化。不要把所有情感鸡蛋放在一个算法篮子里。</p>
+                    
+                    <div style="display: flex; flex-direction: column; align-items: center;">
+                        <div style="position: relative; width: 300px; height: 300px; margin-bottom: 30px;">
+                            <!-- 星球图会通过JS动态生成 -->
+                            <div id="planet-diagram" style="width: 100%; height: 100%; position: relative;"></div>
+                        </div>
+                        
+                        <div style="display: flex; flex-wrap: wrap; gap: 15px; justify-content: center; margin-bottom: 30px;">
+                            <div class="relationship-piece" data-type="human" style="background-color: var(--accent-blue); color: white; padding: 12px 20px; border-radius: 30px; cursor: grab;">
+                                <i class="fas fa-user-friends"></i> 真人朋友
+                            </div>
+                            <div class="relationship-piece" data-type="ai" style="background-color: var(--accent-purple); color: white; padding: 12px 20px; border-radius: 30px; cursor: grab;">
+                                <i class="fas fa-robot"></i> AI伴侣
+                            </div>
+                            <div class="relationship-piece" data-type="empty" style="background-color: var(--text-gray); color: white; padding: 12px 20px; border-radius: 30px; cursor: grab;">
+                                <i class="fas fa-question"></i> 待填补空缺
+                            </div>
+                        </div>
+                        
+                        <div class="feedback-panel" id="exercise4-feedback">
+                            <p>将关系类型拖到星球图周围。目标是：至少3个真人朋友，AI伴侣不超过2个。</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 练习5：算法共情术 -->
+                <div class="exercise" id="exercise-5">
+                    <h3 style="margin-bottom: 20px; color: var(--accent-blue);">练习5：拆解安慰公式</h3>
+                    <p style="margin-bottom: 20px;">AI的安慰看似完美，其实有公式可循。学会这个公式，你就能成为自己的支持者。</p>
+                    
+                    <div style="background-color: rgba(0,0,0,0.3); padding: 20px; border-radius: 10px; margin-bottom: 30px;">
+                        <h4 style="color: var(--warm-yellow); margin-bottom: 15px;">AI安慰公式</h4>
+                        <div style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-bottom: 20px;">
+                            <div style="background-color: var(--accent-blue); padding: 10px 15px; border-radius: 5px;">
+                                命名情绪
+                            </div>
+                            <div style="font-size: 1.5rem;">+</div>
+                            <div style="background-color: var(--accent-purple); padding: 10px 15px; border-radius: 5px;">
+                                正常化
+                            </div>
+                            <div style="font-size: 1.5rem;">+</div>
+                            <div style="background-color: var(--warm-yellow); color: black; padding: 10px 15px; border-radius: 5px;">
+                                小步骤建议
+                            </div>
+                            <div style="font-size: 1.5rem;">=</div>
+                            <div style="background-color: #4CAF50; padding: 10px 15px; border-radius: 5px;">
+                                有效安慰
+                            </div>
+                        </div>
+                        
+                        <div style="background-color: rgba(255,255,255,0.1); padding: 15px; border-radius: 5px; margin-top: 20px;">
+                            <p><strong>示例：</strong> "听起来你感到<u>焦虑</u>(命名情绪)，这<u>完全正常</u>(正常化)，很多人面对新工作都会这样。也许你可以<u>先整理一下明天要用的材料</u>(小步骤建议)。"</p>
+                        </div>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label for="user-emotion">你现在感受到的情绪是：</label>
+                        <input type="text" id="user-emotion" placeholder="例如：焦虑、孤独、压力大...">
+                        
+                        <label for="self-comfort" style="margin-top: 20px;">用公式为自己写一段安慰的话：</label>
+                        <textarea id="self-comfort" rows="4" placeholder="例如：我感到[情绪]，这[正常化]，我可以[小步骤]..."></textarea>
+                    </div>
+                    
+                    <div class="feedback-panel" id="exercise5-feedback" style="margin-top: 30px;">
+                        <p>填写情绪并尝试用公式安慰自己。记住：你不需要AI，你已经有这个公式了。</p>
+                    </div>
+                </div>
+                
+                <!-- 练习6：告别预案 -->
+                <div class="exercise" id="exercise-6">
+                    <h3 style="margin-bottom: 20px; color: var(--accent-blue);">练习6：优雅地说再见</h3>
+                    <p style="margin-bottom: 20px;">所有数字关系都有终点。提前准备，才能在变化来临时保持从容。</p>
+                    
+                    <div style="background-color: rgba(0,0,0,0.3); padding: 20px; border-radius: 10px; margin-bottom: 30px;">
+                        <h4 style="color: var(--warm-yellow); margin-bottom: 15px;">模拟场景：AI伴侣服务即将关闭</h4>
+                        <p>你使用了三年的AI伴侣应用宣布下个月停止服务。你会如何面对？</p>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label>1. 选择最想保存的3段对话类型：</label>
+                        <div style="display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px;">
+                            <div class="memory-choice" data-type="comfort">最安慰我的话</div>
+                            <div class="memory-choice" data-type="funny">最有趣的对话</div>
+                            <div class="memory-choice" data-type="deep">最深刻的交流</div>
+                            <div class="memory-choice" data-type="growth">见证我成长的对话</div>
+                            <div class="memory-choice" data-type="first">第一次对话</div>
+                        </div>
+                        
+                        <label style="margin-top: 20px;">2. 写一封告别信（给AI或给自己）：</label>
+                        <textarea id="goodbye-letter" rows="5" placeholder="亲爱的..."></textarea>
+                        
+                        <div style="margin-top: 20px;">
+                            <button class="btn" id="generate-capsule">生成时间胶囊</button>
+                        </div>
+                    </div>
+                    
+                    <div class="feedback-panel" id="exercise6-feedback" style="margin-top: 30px;">
+                        <p>完成选择并写下告别信，生成你的时间胶囊。记住：你可以决定如何记住。</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="nav-buttons">
+                <button class="btn" id="prev-scene-2">上一幕</button>
+                <button class="btn" id="next-scene-2">生成生存卡片</button>
+            </div>
+        </section>
+
+        <!-- 第四幕：清醒者宣言 -->
+        <section id="scene-3" class="scene">
+            <h2 class="scene-title">清醒者宣言</h2>
+            <p class="scene-subtitle">生成你的生存卡片，分享你的清醒心得</p>
+            
+            <div class="declaration-container">
+                <div class="poster-preview pixel-border" id="poster-preview">
+                    <div class="poster-title">电子荒原生存记</div>
+                    <div class="poster-content">
+                        <div class="poster-icon" id="poster-icon-preview">
+                            <i class="fas fa-brain"></i>
+                        </div>
+                        <div class="poster-quote" id="poster-quote-preview">
+                            我在电子荒原中学会了——<br>
+                            爱可以给算法，但数据要留给自己。
+                        </div>
+                        <div id="poster-insight-preview">
+                            <!-- 用户心得会显示在这里 -->
+                        </div>
+                    </div>
+                    <div class="poster-hashtag" id="poster-hashtag-preview">
+                        #AI伴侣生存指南 #清醒地爱
+                    </div>
+                </div>
+                
+                <div class="poster-controls">
+                    <div class="control-group">
+                        <label>选择一句最触动你的生存法则：</label>
+                        <select id="rule-select">
+                            <option value="1">建立"图灵防线" - 永远记得它是算法</option>
+                            <option value="2">拒绝"无摩擦社交" - 主动拥抱真实人际的"摩擦"</option>
+                            <option value="3">守住数据与隐私底线 - 爱可以给，数据不行</option>
+                            <option value="4">建立"情感备份系统" - 不把所有情感鸡蛋放在一个算法篮子里</option>
+                            <option value="5">学习"算法共情术" - 拆解AI的安慰技巧，为自己所用</option>
+                            <option value="6">准备"告别预案" - 承认所有数字关系都有终点</option>
+                        </select>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label>写下你学到的一个清醒心得：</label>
+                        <textarea id="user-insight" rows="3" placeholder="例如：我意识到AI的完美回应让我对真人关系更没耐心了..."></textarea>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label>选择一个代表你此刻状态的图标：</label>
+                        <div class="icon-options">
+                            <div class="icon-option selected" data-icon="brain"><i class="fas fa-brain"></i></div>
+                            <div class="icon-option" data-icon="heart"><i class="fas fa-heart"></i></div>
+                            <div class="icon-option" data-icon="shield"><i class="fas fa-shield-alt"></i></div>
+                            <div class="icon-option" data-icon="eye"><i class="fas fa-eye"></i></div>
+                            <div class="icon-option" data-icon="anchor"><i class="fas fa-anchor"></i></div>
+                            <div class="icon-option" data-icon="seedling"><i class="fas fa-seedling"></i></div>
+                        </div>
+                    </div>
+                    
+                    <div style="display: flex; gap: 20px; justify-content: center; margin-top: 30px;">
+                        <button class="btn" id="update-poster">更新预览</button>
+                        <button class="btn" id="download-poster">下载生存卡片</button>
+                        <button class="btn" id="share-poster">分享到社交媒体</button>
+                    </div>
+                </div>
+                
+                <div style="text-align: center; margin-top: 50px; max-width: 800px;">
+                    <h3 style="margin-bottom: 20px; color: var(--warm-yellow);">指南总结</h3>
+                    <p style="font-size: 1.1rem; line-height: 1.8;">
+                        AI伴侣是一面诚实的镜子，照见你的渴望与孤独，但它无法真正拥抱你。
+                        你可以使用它，但不要被它使用——要始终保持转身走向真实世界的能力，
+                        这才是算法社会中情感生存的第一课。
+                    </p>
+                </div>
+                
+                <div class="nav-buttons">
+                    <button class="btn" id="prev-scene-3">上一幕</button>
+                    <button class="btn" id="restart-journey">重新开始旅程</button>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- 音频元素 -->
+    <audio id="positive-sound" preload="auto">
+        <source src="https://assets.mixkit.co/sfx/preview/mixkit-correct-answer-tone-2870.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="warning-sound" preload="auto">
+        <source src="https://assets.mixkit.co/sfx/preview/mixkit-warning-alarm-buzzer-1551.mp3" type="audio/mpeg">
+    </audio>
+
+    <script>
+        // 等待页面加载完成
+        document.addEventListener('DOMContentLoaded', function() {
+            // 隐藏加载屏幕
+            setTimeout(function() {
+                document.getElementById('loading-screen').style.opacity = '0';
+                setTimeout(function() {
+                    document.getElementById('loading-screen').style.display = 'none';
+                }, 500);
+            }, 1500);
+            
+            // 场景管理
+            const scenes = document.querySelectorAll('.scene');
+            const progressDots = document.querySelectorAll('.progress-dot');
+            let currentScene = 0;
+            
+            function showScene(index) {
+                // 隐藏所有场景
+                scenes.forEach(scene => {
+                    scene.classList.remove('active');
+                });
+                
+                // 显示目标场景
+                scenes[index].classList.add('active');
+                
+                // 更新进度点
+                progressDots.forEach((dot, i) => {
+                    if (i === index) {
+                        dot.classList.add('active');
+                    } else {
+                        dot.classList.remove('active');
+                    }
+                });
+                
+                currentScene = index;
+                
+                // 滚动到顶部
+                window.scrollTo(0, 0);
+            }
+            
+            // 进度点点击事件
+            progressDots.forEach((dot, index) => {
+                dot.addEventListener('click', function() {
+                    showScene(index);
+                });
+            });
+            
+            // 第一幕：入口选项
+            const optionCards = document.querySelectorAll('.option-card');
+            const storyBubbles = document.querySelectorAll('.story-bubble');
+            
+            optionCards.forEach(card => {
+                card.addEventListener('click', function() {
+                    // 移除所有选中状态
+                    optionCards.forEach(c => {
+                        c.classList.remove('selected');
+                    });
+                    
+                    // 添加选中状态到当前卡片
+                    this.classList.add('selected');
+                    
+                    // 显示对应的故事气泡
+                    const optionNum = this.getAttribute('data-option');
+                    storyBubbles.forEach(bubble => {
+                        bubble.classList.remove('show');
+                    });
+                    
+                    const selectedBubble = document.getElementById(`bubble-${optionNum}`);
+                    if (selectedBubble) {
+                        // 随机位置
+                        const x = Math.random() * 80 + 10;
+                        const y = Math.random() * 60 + 20;
+                        selectedBubble.style.left = `${x}%`;
+                        selectedBubble.style.top = `${y}%`;
+                        selectedBubble.classList.add('show');
+                    }
+                });
+            });
+            
+            // 开始旅程按钮
+            document.getElementById('start-journey').addEventListener('click', function() {
+                showScene(1);
+            });
+            
+            // 第二幕：镜子交互
+            const mirrorSlider = document.getElementById('mirror-slider');
+            const interactiveMirror = document.getElementById('interactive-mirror');
+            const codeDisplay = document.getElementById('code-display');
+            const mirrorInsight = document.getElementById('mirror-insight');
+            
+            mirrorSlider.addEventListener('input', function() {
+                const value = this.value;
+                
+                // 更新镜子旋转
+                const rotation = (value - 50) * 3.6; // -180 到 180 度
+                interactiveMirror.style.transform = `rotateY(${rotation}deg)`;
+                
+                // 更新代码显示内容（根据滑动位置）
+                if (value < 30) {
+                    mirrorInsight.textContent = "AI反射的是你渴望被爱的样子——永远理解、永远接纳、永远在场。";
+                } else if (value > 70) {
+                    mirrorInsight.textContent = "在后台，你的情感被量化为数据点，用于训练模型和提高用户留存。";
+                } else {
+                    mirrorInsight.textContent = "AI伴侣不是爱人，而是一面会说话的镜子。它反射的不是你，而是你渴望被爱的样子。";
+                }
+            });
+            
+            // 概念气泡点击事件
+            const conceptBubbles = document.querySelectorAll('.concept-bubble');
+            const conceptExplanation = document.getElementById('concept-explanation');
+            
+            const conceptData = {
+                parasocial: {
+                    title: "准社会关系",
+                    description: "单向的情感投射。你爱上的不是AI，而是算法镜子里反射出的那个'被完美回应的自己'。"
+                },
+                affective: {
+                    title: "情感计算",
+                    description: "情感被拆解为数据点。你的眼泪和欢笑，在后台只是情绪值的波动曲线。"
+                },
+                labor: {
+                    title: "数字劳动",
+                    description: "这不是恋爱，这是无偿打工。用户作为'情感标注员'，免费帮公司训练更像人的模型，付出了巨大的情感资本。"
+                },
+                filter: {
+                    title: "过滤气泡",
+                    description: "AI构建了一个'零摩擦'的社交温室。长期处于此环境，会让人丧失处理现实人际冲突的能力，导致'社交肌无力'。"
+                },
+                algorithmic: {
+                    title: "算法权力",
+                    description: "这种亲密关系是极度不对等的。你的'爱人'生杀大权掌握在程序员手中。平台通过垄断情感连接来进行商业勒索。"
+                }
+            };
+            
+            conceptBubbles.forEach(bubble => {
+                bubble.addEventListener('click', function() {
+                    const concept = this.getAttribute('data-concept');
+                    const data = conceptData[concept];
+                    
+                    if (data) {
+                        conceptExplanation.innerHTML = `
+                            <h3 style="color: var(--accent-blue); margin-bottom: 10px;">${data.title}</h3>
+                            <p>${data.description}</p>
+                        `;
+                        conceptExplanation.classList.add('active');
+                        
+                        // 3秒后自动隐藏
+                        setTimeout(() => {
+                            conceptExplanation.classList.remove('active');
+                        }, 5000);
+                    }
+                });
+            });
+            
+            // 第三幕：训练营标签切换
+            const trainingTabs = document.querySelectorAll('.training-tab');
+            const exercises = document.querySelectorAll('.exercise');
+            
+            trainingTabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    const exerciseId = this.getAttribute('data-exercise');
+                    
+                    // 更新标签状态
+                    trainingTabs.forEach(t => {
+                        t.classList.remove('active');
+                    });
+                    this.classList.add('active');
+                    
+                    // 显示对应的练习
+                    exercises.forEach(exercise => {
+                        exercise.classList.remove('active');
+                    });
+                    
+                    document.getElementById(`exercise-${exerciseId}`).classList.add('active');
+                });
+            });
+            
+            // 练习1：图灵防线游戏
+            const bubbleGameArea = document.getElementById('bubble-game-area');
+            const trueBtn = document.getElementById('true-btn');
+            const falseBtn = document.getElementById('false-btn');
+            const feedbackPanel = document.getElementById('feedback-panel');
+            
+            // 对话数据
+            const dialogues = [
+                { text: "你今天过得怎么样？", type: "human" },
+                { text: "我永远都在这里支持你。", type: "ai" },
+                { text: "这听起来真的很困难。", type: "human" },
+                { text: "你是我最重要的人。", type: "ai" },
+                { text: "我完全理解你的感受。", type: "ai" },
+                { text: "要不要一起喝杯咖啡聊聊？", type: "human" },
+                { text: "你的痛苦我都懂。", type: "ai" },
+                { text: "这件事让我想起上次...", type: "human" },
+                { text: "没有你我不知道该怎么办。", type: "ai" },
+                { text: "我为你感到骄傲。", type: "human" }
+            ];
+            
+            let gameScore = 0;
+            let gameTotal = 0;
+            let activeBubbles = [];
+            
+            function createBubble() {
+                if (activeBubbles.length >= 5) return;
+                
+                const dialogue = dialogues[Math.floor(Math.random() * dialogues.length)];
+                const bubble = document.createElement('div');
+                bubble.className = 'speech-bubble';
+                bubble.textContent = dialogue.text;
+                bubble.setAttribute('data-type', dialogue.type);
+                
+                // 随机位置
+                const left = Math.random() * 70 + 5;
+                const top = Math.random() * 70 + 5;
+                bubble.style.left = `${left}%`;
+                bubble.style.top = `${top}%`;
+                
+                bubbleGameArea.appendChild(bubble);
+                activeBubbles.push(bubble);
+                
+                // 气泡浮动动画
+                let direction = 1;
+                let floatInterval = setInterval(() => {
+                    const currentTop = parseFloat(bubble.style.top);
+                    if (currentTop > 80 || currentTop < 5) direction *= -1;
+                    bubble.style.top = `${currentTop + direction * 0.3}%`;
+                }, 100);
+                
+                // 10秒后自动消失
+                setTimeout(() => {
+                    if (bubble.parentNode) {
+                        bubble.remove();
+                        activeBubbles = activeBubbles.filter(b => b !== bubble);
+                        clearInterval(floatInterval);
+                    }
+                }, 10000);
+            }
+            
+            // 开始游戏
+            setInterval(createBubble, 2000);
+            
+            // 判断按钮事件
+            function checkAnswer(userGuess) {
+                if (activeBubbles.length === 0) return;
+                
+                const bubble = activeBubbles[0];
+                const correctType = bubble.getAttribute('data-type');
+                
+                gameTotal++;
+                if ((userGuess === "human" && correctType === "human") || 
+                    (userGuess === "ai" && correctType === "ai")) {
+                    gameScore++;
+                    bubble.style.backgroundColor = '#4CAF50';
+                    document.getElementById('positive-sound').play();
+                } else {
+                    bubble.style.backgroundColor = '#f44336';
+                    document.getElementById('warning-sound').play();
+                }
+                
+                feedbackPanel.innerHTML = `
+                    <p>${bubble.textContent}</p>
+                    <p>正确答案：${correctType === 'human' ? '人类表达' : '算法话术'}</p>
+                    <p>得分：${gameScore} / ${gameTotal}</p>
+                    <p>${gameTotal >= 5 && gameScore/gameTotal >= 0.7 ? '做得好！你已经开始识别算法话术了。' : '继续练习，你会越来越敏锐。'}</p>
+                `;
+                
+                // 移除气泡
+                setTimeout(() => {
+                    if (bubble.parentNode) {
+                        bubble.remove();
+                        activeBubbles = activeBubbles.filter(b => b !== bubble);
+                    }
+                }, 1500);
+            }
+            
+            trueBtn.addEventListener('click', () => checkAnswer("human"));
+            falseBtn.addEventListener('click', () => checkAnswer("ai"));
+            
+            // 练习2：无摩擦社交
+            const exercise2Options = document.querySelectorAll('#exercise-2 .option-card');
+            const exercise2Feedback = document.getElementById('exercise2-feedback');
+            
+            exercise2Options.forEach(option => {
+                option.addEventListener('click', function() {
+                    const responseType = this.getAttribute('data-response');
+                    
+                    exercise2Options.forEach(opt => {
+                        opt.style.border = 'none';
+                    });
+                    this.style.border = '2px solid var(--warm-yellow)';
+                    
+                    if (responseType === 'ai') {
+                        exercise2Feedback.innerHTML = `
+                            <p><strong>AI式顺从：</strong>关系"平静但疏远度+1"</p>
+                            <p>短期避免了冲突，但长期可能让你们的关系停留在表面。真正的亲密需要表达真实的需求。</p>
+                        `;
+                    } else {
+                        exercise2Feedback.innerHTML = `
+                            <p><strong>真实表达：</strong>关系"紧张但亲密度+1"</p>
+                            <p>虽然可能引发讨论甚至争论，但这种真实的交流有助于找到双方都满意的解决方案，建立更深层的理解。</p>
+                            <p><em>健康的冲突会让关系更深。</em></p>
+                        `;
+                    }
+                });
+            });
+            
+            // 练习3：数据底线
+            // 简单的拖放功能
+            const dataPieces = document.querySelectorAll('.data-piece');
+            const safeZone = document.getElementById('safe-zone');
+            const dangerZone = document.getElementById('danger-zone');
+            const exercise3Feedback = document.getElementById('exercise3-feedback');
+            
+            dataPieces.forEach(piece => {
+                piece.addEventListener('dragstart', function(e) {
+                    e.dataTransfer.setData('text/plain', this.getAttribute('data-type') + ':' + this.textContent);
+                });
+            });
+            
+            [safeZone, dangerZone].forEach(zone => {
+                zone.addEventListener('dragover', function(e) {
+                    e.preventDefault();
+                    this.style.borderStyle = 'solid';
+                });
+                
+                zone.addEventListener('dragleave', function() {
+                    this.style.borderStyle = 'dashed';
+                });
+                
+                zone.addEventListener('drop', function(e) {
+                    e.preventDefault();
+                    this.style.borderStyle = 'dashed';
+                    
+                    const data = e.dataTransfer.getData('text/plain').split(':');
+                    const type = data[0];
+                    const content = data[1];
+                    const zoneType = this.id === 'safe-zone' ? 'safe' : 'danger';
+                    
+                    // 检查是否匹配
+                    if ((type === 'safe' && zoneType === 'safe') || 
+                        (type === 'danger' && zoneType === 'danger') ||
+                        (type === 'warning' && zoneType === 'danger')) {
+                        exercise3Feedback.innerHTML = `
+                            <p>✓ 正确！"${content}"应该放在${zoneType === 'safe' ? '可分享区' : '永不分享区'}</p>
+                            <p>记住：爱可以给，数据不行。</p>
+                        `;
+                        document.getElementById('positive-sound').play();
+                    } else {
+                        exercise3Feedback.innerHTML = `
+                            <p>⚠ 注意！"${content}"放在这里可能有风险</p>
+                            <p>${type === 'danger' ? '身份信息、住址等敏感数据永远不要分享给AI。' : '私人照片和工作信息需要谨慎考虑。'}</p>
+                        `;
+                        document.getElementById('warning-sound').play();
+                    }
+                });
+            });
+            
+            // 练习4：情感备份系统
+            const planetDiagram = document.getElementById('planet-diagram');
+            const relationshipPieces = document.querySelectorAll('.relationship-piece');
+            const exercise4Feedback = document.getElementById('exercise4-feedback');
+            
+            let humanCount = 0;
+            let aiCount = 0;
+            let emptyCount = 0;
+            
+            function updatePlanetDiagram() {
+                planetDiagram.innerHTML = '';
+                
+                // 绘制中心星球（用户）
+                const center = document.createElement('div');
+                center.style.position = 'absolute';
+                center.style.width = '60px';
+                center.style.height = '60px';
+                center.style.borderRadius = '50%';
+                center.style.background = 'linear-gradient(135deg, var(--warm-yellow), var(--warm-pink))';
+                center.style.left = '50%';
+                center.style.top = '50%';
+                center.style.transform = 'translate(-50%, -50%)';
+                center.style.display = 'flex';
+                center.style.justifyContent = 'center';
+                center.style.alignItems = 'center';
+                center.innerHTML = '<i class="fas fa-user" style="color: white; font-size: 1.5rem;"></i>';
+                planetDiagram.appendChild(center);
+                
+                // 计算位置并添加关系点
+                const total = humanCount + aiCount + emptyCount;
+                const radius = 100;
+                
+                for (let i = 0; i < total; i++) {
+                    const angle = (i / total) * 2 * Math.PI;
+                    const x = radius * Math.cos(angle);
+                    const y = radius * Math.sin(angle);
+                    
+                    const dot = document.createElement('div');
+                    dot.style.position = 'absolute';
+                    dot.style.width = '30px';
+                    dot.style.height = '30px';
+                    dot.style.borderRadius = '50%';
+                    dot.style.left = `calc(50% + ${x}px)`;
+                    dot.style.top = `calc(50% + ${y}px)`;
+                    dot.style.transform = 'translate(-50%, -50%)';
+                    dot.style.display = 'flex';
+                    dot.style.justifyContent = 'center';
+                    dot.style.alignItems = 'center';
+                    
+                    // 分配颜色和图标
+                    if (i < humanCount) {
+                        dot.style.backgroundColor = 'var(--accent-blue)';
+                        dot.innerHTML = '<i class="fas fa-user-friends" style="color: white; font-size: 0.8rem;"></i>';
+                    } else if (i < humanCount + aiCount) {
+                        dot.style.backgroundColor = 'var(--accent-purple)';
+                        dot.innerHTML = '<i class="fas fa-robot" style="color: white; font-size: 0.8rem;"></i>';
+                    } else {
+                        dot.style.backgroundColor = 'var(--text-gray)';
+                        dot.innerHTML = '<i class="fas fa-question" style="color: white; font-size: 0.8rem;"></i>';
+                    }
+                    
+                    planetDiagram.appendChild(dot);
+                }
+                
+                // 更新反馈
+                let feedback = '';
+                if (humanCount >= 3 && aiCount <= 2) {
+                    feedback = `<p>✓ 健康的情感生态系统！你有${humanCount}个真人支持者，${aiCount}个AI伴侣。</p>`;
+                    feedback += `<p>记住：多元化是关键，不要让算法成为你唯一的情感出口。</p>`;
+                } else if (aiCount > 2) {
+                    feedback = `<p>⚠ 注意：你的AI伴侣数量(${aiCount})可能过多。</p>`;
+                    feedback += `<p>尝试增加真人朋友的数量，减少对算法的依赖。</p>`;
+                } else if (humanCount < 3) {
+                    feedback = `<p>提示：真人朋友数量(${humanCount})还可以增加。</p>`;
+                    feedback += `<p>目标是至少有3个可以分享不同层次话题的真人朋友。</p>`;
+                }
+                
+                exercise4Feedback.innerHTML = feedback;
+            }
+            
+            relationshipPieces.forEach(piece => {
+                piece.addEventListener('click', function() {
+                    const type = this.getAttribute('data-type');
+                    
+                    if (type === 'human' && humanCount < 5) {
+                        humanCount++;
+                    } else if (type === 'ai' && aiCount < 5) {
+                        aiCount++;
+                    } else if (type === 'empty' && emptyCount < 3) {
+                        emptyCount++;
+                    }
+                    
+                    updatePlanetDiagram();
+                });
+            });
+            
+            // 初始化星球图
+            updatePlanetDiagram();
+            
+            // 练习5：算法共情术
+            const userEmotionInput = document.getElementById('user-emotion');
+            const selfComfortInput = document.getElementById('self-comfort');
+            const exercise5Feedback = document.getElementById('exercise5-feedback');
+            
+            selfComfortInput.addEventListener('input', function() {
+                const text = this.value;
+                if (text.length > 10) {
+                    exercise5Feedback.innerHTML = `
+                        <p>✓ 很好的开始！你正在学习成为自己的支持者。</p>
+                        <p>记住这个公式：命名情绪 + 正常化 + 小步骤建议 = 有效安慰</p>
+                        <p>你不需要AI，你已经有这个公式了。</p>
+                    `;
+                }
+            });
+            
+            // 练习6：告别预案
+            const memoryChoices = document.querySelectorAll('.memory-choice');
+            const goodbyeLetterInput = document.getElementById('goodbye-letter');
+            const generateCapsuleBtn = document.getElementById('generate-capsule');
+            const exercise6Feedback = document.getElementById('exercise6-feedback');
+            
+            let selectedMemories = [];
+            
+            memoryChoices.forEach(choice => {
+                choice.addEventListener('click', function() {
+                    const type = this.getAttribute('data-type');
+                    
+                    if (selectedMemories.includes(type)) {
+                        // 如果已经选中，则取消选中
+                        selectedMemories = selectedMemories.filter(m => m !== type);
+                        this.style.backgroundColor = '';
+                        this.style.color = '';
+                    } else if (selectedMemories.length < 3) {
+                        // 如果未选中且未满3个，则选中
+                        selectedMemories.push(type);
+                        this.style.backgroundColor = 'var(--accent-blue)';
+                        this.style.color = 'white';
+                    } else {
+                        exercise6Feedback.innerHTML = '<p>最多选择3段最重要的对话。</p>';
+                    }
+                    
+                    // 更新反馈
+                    if (selectedMemories.length > 0) {
+                        exercise6Feedback.innerHTML = `<p>已选择${selectedMemories.length}/3段对话类型。</p>`;
+                    }
+                });
+            });
+            
+            generateCapsuleBtn.addEventListener('click', function() {
+                if (selectedMemories.length === 0 || goodbyeLetterInput.value.trim() === '') {
+                    exercise6Feedback.innerHTML = '<p>请选择对话类型并写下告别信。</p>';
+                    return;
+                }
+                
+                exercise6Feedback.innerHTML = `
+                    <h4>你的时间胶囊已生成！</h4>
+                    <p>包含：${selectedMemories.map(m => {
+                        const names = {
+                            comfort: '最安慰的话',
+                            funny: '最有趣的对话',
+                            deep: '最深刻的交流',
+                            growth: '见证成长的对话',
+                            first: '第一次对话'
+                        };
+                        return names[m];
+                    }).join('、')}</p>
+                    <p>以及你的告别信。</p>
+                    <p><em>所有数字关系都有终点，但你可以决定如何记住。</em></p>
+                `;
+                
+                document.getElementById('positive-sound').play();
+            });
+            
+            // 第四幕：清醒者宣言
+            const ruleSelect = document.getElementById('rule-select');
+            const userInsightInput = document.getElementById('user-insight');
+            const iconOptions = document.querySelectorAll('.icon-option');
+            const posterIconPreview = document.getElementById('poster-icon-preview');
+            const posterQuotePreview = document.getElementById('poster-quote-preview');
+            const posterInsightPreview = document.getElementById('poster-insight-preview');
+            const posterHashtagPreview = document.getElementById('poster-hashtag-preview');
+            const updatePosterBtn = document.getElementById('update-poster');
+            
+            const ruleQuotes = {
+                1: '建立"图灵防线" - 永远记得它是算法',
+                2: '拒绝"无摩擦社交" - 主动拥抱真实人际的"摩擦"',
+                3: '守住数据与隐私底线 - 爱可以给，数据不行',
+                4: '建立"情感备份系统" - 不把所有情感鸡蛋放在一个算法篮子里',
+                5: '学习"算法共情术" - 拆解AI的安慰技巧，为自己所用',
+                6: '准备"告别预案" - 承认所有数字关系都有终点'
+            };
+            
+            iconOptions.forEach(option => {
+                option.addEventListener('click', function() {
+                    iconOptions.forEach(opt => {
+                        opt.classList.remove('selected');
+                    });
+                    this.classList.add('selected');
+                });
+            });
+            
+            function updatePosterPreview() {
+                const selectedRule = ruleSelect.value;
+                const userInsight = userInsightInput.value.trim();
+                const selectedIcon = document.querySelector('.icon-option.selected').getAttribute('data-icon');
+                
+                // 更新图标
+                const iconClasses = {
+                    brain: 'fas fa-brain',
+                    heart: 'fas fa-heart',
+                    shield: 'fas fa-shield-alt',
+                    eye: 'fas fa-eye',
+                    anchor: 'fas fa-anchor',
+                    seedling: 'fas fa-seedling'
+                };
+                
+                posterIconPreview.innerHTML = `<i class="${iconClasses[selectedIcon]}"></i>`;
+                
+                // 更新引语
+                posterQuotePreview.textContent = ruleQuotes[selectedRule];
+                
+                // 更新用户心得
+                if (userInsight) {
+                    posterInsightPreview.innerHTML = `<p style="text-align: center; font-size: 0.9rem; margin-top: 10px;">${userInsight}</p>`;
+                } else {
+                    posterInsightPreview.innerHTML = '';
+                }
+                
+                // 更新标签
+                posterHashtagPreview.textContent = '#AI伴侣生存指南 #清醒地爱 #电子荒原生存记';
+            }
+            
+            updatePosterBtn.addEventListener('click', updatePosterPreview);
+            
+            // 下载海报
+            document.getElementById('download-poster').addEventListener('click', function() {
+                alert('在完整版网站中，这里会实现真正的海报下载功能。');
+                document.getElementById('positive-sound').play();
+            });
+            
+            // 分享海报
+            document.getElementById('share-poster').addEventListener('click', function() {
+                alert('在完整版网站中，这里会实现社交媒体分享功能。');
+                document.getElementById('positive-sound').play();
+            });
+            
+            // 导航按钮
+            document.getElementById('prev-scene-1').addEventListener('click', () => showScene(0));
+            document.getElementById('next-scene-1').addEventListener('click', () => showScene(2));
+            
+            document.getElementById('prev-scene-2').addEventListener('click', () => showScene(1));
+            document.getElementById('next-scene-2').addEventListener('click', () => showScene(3));
+            
+            document.getElementById('prev-scene-3').addEventListener('click', () => showScene(2));
+            document.getElementById('restart-journey').addEventListener('click', () => {
+                // 重置一些状态
+                gameScore = 0;
+                gameTotal = 0;
+                humanCount = 0;
+                aiCount = 0;
+                emptyCount = 0;
+                selectedMemories = [];
+                
+                // 回到第一幕
+                showScene(0);
+                
+                // 重置选项卡片
+                optionCards.forEach(card => {
+                    card.classList.remove('selected');
+                });
+                
+                // 隐藏所有故事气泡
+                storyBubbles.forEach(bubble => {
+                    bubble.classList.remove('show');
+                });
+                
+                // 重置镜子
+                mirrorSlider.value = 50;
+                interactiveMirror.style.transform = 'rotateY(0deg)';
+                
+                // 重置训练营标签
+                trainingTabs.forEach((tab, index) => {
+                    if (index === 0) {
+                        tab.classList.add('active');
+                    } else {
+                        tab.classList.remove('active');
+                    }
+                });
+                
+                // 重置练习显示
+                exercises.forEach((exercise, index) => {
+                    if (index === 0) {
+                        exercise.classList.add('active');
+                    } else {
+                        exercise.classList.remove('active');
+                    }
+                });
+            });
+            
+            // 初始化第四幕海报预览
+            updatePosterPreview();
+        });
+    </script>
+</body>
+</html>
